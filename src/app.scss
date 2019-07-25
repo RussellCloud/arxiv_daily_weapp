@@ -1,0 +1,244 @@
+page {
+  font-family: 'PingFang SC', 'Songti SC', 'Lucida Grande';
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  background: rgba(255, 255, 255, 1);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.columns {
+  display: flex;
+}
+
+.column {
+  display: block;
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  flex: 1;
+
+  &-header {
+    &.columns {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .column {
+      flex: none;
+    }
+    .title {
+      font-size: 60rpx;
+      font-weight: 500;
+      line-height: 84rpx;
+    }
+    .subtitle {
+      margin-left: 14rpx;
+      font-size: 20rpx;
+      color: #747272;
+    }
+    .right {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .tags {
+      font-size: 20rpx;
+      color: #61b58f;
+
+      .btn {
+        padding: 20rpx;
+        display: inline-block;
+        box-sizing: border-box;
+        line-height: 1;
+      }
+    }
+  }
+
+  &-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  &-footer {
+    flex: none;
+    display: flex;
+    align-items: center;
+    height: 140rpx;
+    background-color: #fff;
+  }
+}
+
+.button {
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  border: 1px solid #979797;
+  background-color: #fff;
+  color: #747474;
+  height: 50rpx;
+  font-size: 24rpx;
+  line-height: calc(50rpx - 2px);
+  font-weight: 500;
+
+  &.big {
+    width: 550rpx;
+    height: 70rpx;
+    border-radius: 35rpx;
+    font-size: 30rpx;
+    line-height: 70rpx;
+    border: none;
+  }
+
+  &.primary {
+    color: #fff;
+    background-color: #009688;
+  }
+
+  &[disabled] {
+    color: #fff !important;
+    background-color: #979797 !important;
+  }
+
+  &:after {
+    content: none;
+  }
+}
+
+.catalog {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &-header {
+    color: #797878;
+    font-size: 30rpx;
+    font-weight: 500;
+    line-height: 42rpx;
+    margin-top: 46rpx;
+    margin-bottom: 70rpx - 20rpx;
+
+    .subtitle {
+      font-size: 24rpx;
+    }
+  }
+  &-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+
+      .button {
+        display: inline-flex;
+        margin-top: 20rpx;
+        margin-bottom: 20rpx;
+
+        // &:not(:last-child) {
+        //   margin-right: 20rpx;
+        // }
+
+        &.selected {
+          border-color: rgba(0, 0, 0, 0);
+          color: #fff;
+          background-color: #009688;
+        }
+      }
+    }
+
+    .actions {
+      .button {
+        margin-left: 0;
+        width: 260rpx;
+      }
+    }
+  }
+}
+
+.scroll-view {
+  position: absolute;
+  height: 100%;
+}
+
+.read-list {
+  margin-top: 37rpx;
+}
+
+.list {
+  .item {
+    padding-bottom: 30rpx;
+    box-sizing: border-box;
+    &:not(:last-child) {
+      margin-bottom: 24rpx;
+      border-bottom: 1px solid #979797;
+    }
+
+    &-recommend {
+      color: #747272;
+      font-size: 22rpx;
+      line-height: 30rpx;
+    }
+    &-title {
+      color: #000;
+      font-size: 24rpx;
+      font-weight: 600;
+      line-height: 33rpx;
+      margin-top: 12rpx;
+    }
+    &-description {
+      color: #747272;
+      font-size: 20rpx;
+      line-height: 23rpx;
+      margin-top: 12rpx;
+    }
+    &-author {
+      display: flex;
+      align-items: center;
+      color: #000;
+      font-size: 20rpx;
+      line-height: 23rpx;
+      margin-top: 12rpx;
+
+      .left {
+        flex: 1;
+      }
+
+      .right {
+        flex: none;
+        width: 30rpx + 35rpx;
+      }
+    }
+  }
+}
+
+.icon-heart {
+  width: 30rpx;
+  height: 28rpx;
+}
+
+.affix {
+  width: 100rpx;
+  height: 100rpx;
+  position: fixed;
+  right: 30rpx;
+  bottom: 40rpx;
+  .collect {
+    width: 100%;
+    height: auto;
+  }
+}
