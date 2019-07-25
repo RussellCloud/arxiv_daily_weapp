@@ -7,6 +7,7 @@ export default class Navbar extends Component {
   static defaultProps = {
     title: 'arXiv',
     showBack: false,
+    backLabel: '',
     transparent: false,
     isBlack40: false
   }
@@ -30,8 +31,6 @@ export default class Navbar extends Component {
     Navbar.options.ncs.height = th
   }
 
-  back = () => Taro.navigateBack()
-
   render() {
     let nbc = 'navbar'
     if (this.props.transparent) {
@@ -39,14 +38,20 @@ export default class Navbar extends Component {
     } else if (this.props.isBlack40) {
       nbc += ' is-black-40'
     }
+    const hasBackLabel = this.props.backLabel ? ' has-label' : ''
     return (
       <CoverView className={nbc} style={Navbar.options.nbs}>
         <CoverView className="navbar-container" style={Navbar.options.ncs}>
-          <CoverView className="navbar-start">
+          <CoverView className={`navbar-start${hasBackLabel}`}>
             {this.props.showBack ? (
-              <CoverView className="back" onClick={this.back}>
+              <CoverView className="back">
                 <Navigator open-type="navigateBack">
                   <CoverImage className="icon-back" src={BACK} />
+                  {this.props.backLabel ? (
+                    <CoverView className="label">
+                      {this.props.backLabel}
+                    </CoverView>
+                  ) : null}
                 </Navigator>
               </CoverView>
             ) : (
@@ -54,7 +59,7 @@ export default class Navbar extends Component {
             )}
           </CoverView>
           <CoverView className="navbar-title">{this.props.title}</CoverView>
-          <CoverView className="navbar-end" />
+          <CoverView className={`navbar-end${hasBackLabel}`} />
         </CoverView>
       </CoverView>
     )

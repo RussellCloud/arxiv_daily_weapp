@@ -1,3 +1,5 @@
+/* postcss-pxtransform disable */
+
 page {
   font-family: 'PingFang SC', 'Songti SC', 'Lucida Grande';
   text-rendering: optimizeLegibility;
@@ -46,6 +48,12 @@ page {
       margin-left: 14rpx;
       font-size: 20rpx;
       color: #747272;
+
+      &.is-50 {
+        margin-left: 0;
+        color: #000;
+        font-size: 50rpx;
+      }
     }
     .right {
       display: flex;
@@ -241,4 +249,9 @@ page {
     width: 100%;
     height: auto;
   }
+}
+
+.navigator-hover {
+  opacity: 1;
+  background-color: transparent;
 }

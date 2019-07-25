@@ -16,12 +16,12 @@ import COLLECT from '@/asserts/collect@2x.png'
 import './index.scss'
 import { clearLine } from 'readline'
 
-const TODAY = new Date()
 const SUBJECTS = Object.keys(ARXIV)
 
-const getDate = date => {
-  return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-    date.getDate()
+const getDate = () => {
+  const today = new Date()
+  return `${String(today.getMonth() + 1).padStart(2, '0')}-${String(
+    today.getDate()
   ).padStart(2, '0')}`
 }
 
@@ -53,7 +53,7 @@ export default class Index extends Component {
 
   state = {
     prevDate: '',
-    date: getDate(TODAY),
+    date: '',
     status: 0,
     disabled: true,
     subjects: [],
@@ -95,8 +95,6 @@ export default class Index extends Component {
     })
   }
 
-  // addAuthor = (a) =>
-
   next = () => {
     this.setState(({ status, subjects, domains, authors }) => {
       status += 1
@@ -109,6 +107,7 @@ export default class Index extends Component {
             break
           case 2:
             disabled = domains.length === 0
+            break
           case 3:
             disabled = false
         }
@@ -124,15 +123,13 @@ export default class Index extends Component {
       return {
         status: 0
       }
-    })
+    }, this.fetch)
   }
 
   collect = (item, index) => {
     this.setState(({ data, collection }) => {
-      data.splice(index, 1, {
-        ...item,
-        collected: !item.collected
-      })
+      item.collected = !item.collected
+      data.splice(index, 1, item)
       const ci = collection.findIndex(c => c._id === item._id)
       if (ci === -1) {
         collection.push(item)
@@ -148,34 +145,53 @@ export default class Index extends Component {
   }
 
   componentWillMount() {
-    const subjects = Taro.getStorageSync('subjects')
-    const domains = Taro.getStorageSync('domains')
+    const subjects = Taro.getStorageSync('subjects') || []
+    const domains = Taro.getStorageSync('domains') || []
+    const authors = Taro.getStorageSync('authors') || []
+    const keys = Taro.getStorageSync('keys') || []
+    const prevDate = Taro.getStorageSync('date') || ''
+    const date = getDate()
     const values = {}
-    if (subjects && subjects.length) {
+    let can = false
+    if (subjects.length) {
       values.subjects = subjects
     }
-    if (domains && domains.length) {
+    if (domains.length) {
       values.domains = domains
+      can = true
     }
-    const count = Object.keys(values).length
-    if (count === 2) {
-      values.authors = Taro.getStorageSync('authors') || []
-      values.prevDate = Taro.getStorageSync('prevDate') || ''
+    if (authors.length) {
+      values.authors = authors
+      can = true
+    }
+    if (keys.length) {
+      values.keys = keys
+      can = true
+    }
+
+    if (prevDate && prevDate !== date) {
+      Taro.removeStorageSync('date')
+      Taro.removeStorageSync('collection')
+      values.collection = []
+    } else {
       values.collection = Taro.getStorageSync('collection') || []
+    }
+    values.date = date
+
+    if (can) {
+      Taro.setStorageSync('date', date)
       this.setState(values)
     } else {
-      if (count) {
-        Taro.removeStorageSync('subjects')
-        Taro.removeStorageSync('domains')
-        Taro.removeStorageSync('authors')
-        Taro.removeStorageSync('date')
-        Taro.removeStorageSync('collection')
-      }
+      Taro.removeStorageSync('subjects')
+      Taro.removeStorageSync('domains')
+      Taro.removeStorageSync('authors')
+      Taro.removeStorageSync('date')
+      Taro.removeStorageSync('collection')
       this.next()
     }
   }
 
-  componentDidMount() {
+  fetch = () => {
     if (this.state.status === 0) {
       const { collection } = this.state
       this.setState(({ data }) => {
@@ -211,6 +227,10 @@ export default class Index extends Component {
       //   author: [].join(',')
       // })
     }
+  }
+
+  componentDidMount() {
+    this.fetch()
   }
 
   componentWillUnmount() {}
@@ -397,7 +417,7 @@ export default class Index extends Component {
 
             {/* <View className="section-footer" /> */}
             <View className="affix">
-              <Navigator url="/pages/collection/index">
+              <Navigator url="/pages/collection/collection">
                 <Image
                   aria-role="button"
                   className="collect"

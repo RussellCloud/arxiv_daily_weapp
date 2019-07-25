@@ -33,21 +33,33 @@
   }
 
   &-start {
+    &.has-label {
+      color: #000000;
+      width: 100px;
+      font-size: 26rpx;
+
+      .back {
+        width: 100%;
+      }
+
+      navigator {
+        display: flex;
+        align-items: center;
+      }
+    }
     .back {
       width: 22px;
       .icon-back {
         width: 45rpx;
         height: 45rpx;
       }
+      .label {
+        margin-left: 10rpx;
+      }
     }
   }
 
   &-title {
     font-weight: 500;
-  }
-
-  .navigator-hover {
-    opacity: 1;
-    background-color: transparent;
   }
 }
