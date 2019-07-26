@@ -237,7 +237,7 @@ export default class Index extends Component {
 
       return api
         .search({
-          subjects: this.state.domains,
+          subject: this.state.domains,
           author: this.state.authors,
           title: this.state.keys,
           date: this.state.date,
