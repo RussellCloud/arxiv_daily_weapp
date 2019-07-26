@@ -5,24 +5,27 @@ import {
   Button,
   ScrollView,
   Image,
-  Navigator
+  Navigator,
+  Input
 } from '@tarojs/components'
 import Navbar from '@/components/navbar'
 import api from '@/api'
 import ARXIV from './arxiv'
+import CLOSE from '@/asserts/close@2x.png'
 import HEART from '@/asserts/heart@2x.png'
 import HEART_SOLID from '@/asserts/heart-solid@2x.png'
 import COLLECT from '@/asserts/collect@2x.png'
+import ARXIV_EMPTY from '@/asserts/arxiv-empty@2x.png'
 import './index.scss'
-import { clearLine } from 'readline'
 
 const SUBJECTS = Object.keys(ARXIV)
 
 const getDate = () => {
   const today = new Date()
-  return `${String(today.getMonth() + 1).padStart(2, '0')}-${String(
-    today.getDate()
-  ).padStart(2, '0')}`
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+    2,
+    '0'
+  )}-${String(today.getDate()).padStart(2, '0')}`
 }
 
 const ITEM = {
@@ -44,7 +47,8 @@ const ITEM = {
 export default class Index extends Component {
   config = {
     navigationBarTitleText: '首页',
-    navigationStyle: 'custom'
+    navigationStyle: 'custom',
+    enablePullDownRefresh: true
   }
 
   options = {
@@ -52,6 +56,7 @@ export default class Index extends Component {
   }
 
   state = {
+    loading: false,
     prevDate: '',
     date: '',
     status: 0,
@@ -60,12 +65,35 @@ export default class Index extends Component {
     domains: [],
     authors: [],
     keys: [],
-    data: [],
-    collection: []
+    collection: [],
+    inputValue: '',
+    showInputDialog: 0,
+    disabledInput: true,
+    list: [],
+    page: 1,
+    pre_page: 10,
+    total: 0,
+    pullUp: 0
+  }
+
+  onPullDownRefresh(params) {
+    this.setState(
+      {
+        status: 0,
+        loading: false,
+        page: 1,
+        list: [],
+        pullUp: 0
+      },
+      () => {
+        this.fetch()
+      }
+    )
   }
 
   selectSubject = (s, i) => {
-    this.setState(({ subjects }) => {
+    this.setState(({ subjects, domains }) => {
+      subjects = [...subjects]
       if (i === -1) {
         subjects.push(s)
         if (subjects.length > 3) {
@@ -74,8 +102,12 @@ export default class Index extends Component {
       } else {
         subjects.splice(i, 1)
       }
+      const allDomains = subjects
+        .map(s => ARXIV[s])
+        .reduce((a, b) => a.concat(b), [])
       return {
         subjects,
+        domains: domains.filter(d => allDomains.includes(d)),
         disabled: subjects.length === 0
       }
     })
@@ -83,6 +115,7 @@ export default class Index extends Component {
 
   selectDomain = (d, i) => {
     this.setState(({ domains }) => {
+      domains = [...domains]
       if (i === -1) {
         domains.push(d)
       } else {
@@ -96,7 +129,7 @@ export default class Index extends Component {
   }
 
   next = () => {
-    this.setState(({ status, subjects, domains, authors }) => {
+    this.setState(({ status, subjects, domains, authors, keys }) => {
       status += 1
       let disabled = status < 4
       console.log(0, status, disabled)
@@ -110,6 +143,7 @@ export default class Index extends Component {
             break
           case 3:
             disabled = false
+            break
         }
         console.log(1, status, disabled)
         return {
@@ -117,19 +151,23 @@ export default class Index extends Component {
           disabled
         }
       }
+      const date = getDate()
       Taro.setStorageSync('subjects', subjects)
       Taro.setStorageSync('domains', domains)
       Taro.setStorageSync('authors', authors)
+      Taro.setStorageSync('keys', keys)
+      Taro.setStorageSync('date', date)
       return {
-        status: 0
+        status: 0,
+        date
       }
     }, this.fetch)
   }
 
   collect = (item, index) => {
-    this.setState(({ data, collection }) => {
+    this.setState(({ list, collection }) => {
       item.collected = !item.collected
-      data.splice(index, 1, item)
+      list.splice(index, 1, item)
       const ci = collection.findIndex(c => c._id === item._id)
       if (ci === -1) {
         collection.push(item)
@@ -138,7 +176,7 @@ export default class Index extends Component {
       }
       Taro.setStorageSync('collection', collection)
       return {
-        data,
+        list,
         collection
       }
     })
@@ -193,39 +231,35 @@ export default class Index extends Component {
 
   fetch = () => {
     if (this.state.status === 0) {
-      const { collection } = this.state
-      this.setState(({ data }) => {
-        data = new Array(10)
-          .fill(0)
-          .map((a, i) => a + i)
-          .map(a => {
-            if (ITEM.recommend_by > 40) {
-              ITEM.recommend_by = ITEM.recommend_by.substr(0, 37) + '...'
-            }
-            if (ITEM.title.length > 100) {
-              ITEM.title = ITEM.title.substr(0, 97) + '...'
-            }
-            if (ITEM.info.length > 130) {
-              ITEM.info = ITEM.info.substr(0, 127) + '...'
-            }
-            if (ITEM.author.length > 50) {
-              ITEM.author = ITEM.author.substr(0, 47) + '...'
-            }
-            const _id = a
+      this.setState({
+        loading: true
+      })
+
+      return api
+        .search({
+          subjects: this.state.domains,
+          author: this.state.authors,
+          title: this.state.keys,
+          date: this.state.date,
+          page: this.state.page,
+          pre_page: this.state.pre_page
+        })
+        .then(res => {
+          Taro.stopPullDownRefresh()
+          this.setState(({ list }) => {
+            list = [...list].concat(res.list)
             return {
-              ...ITEM,
-              _id,
-              collected: collection.findIndex(c => c._id === _id) > -1
+              list,
+              loading: false
             }
           })
-        return {
-          data
-        }
-      })
-      // api.search({
-      //   subjects: this.state.domains.join(','),
-      //   author: [].join(',')
-      // })
+        })
+        .catch(err => {
+          Taro.stopPullDownRefresh()
+          this.setState({
+            loading: false
+          })
+        })
     }
   }
 
@@ -240,42 +274,73 @@ export default class Index extends Component {
   componentDidHide() {}
 
   renderStep() {
-    const { status, subjects, domains } = this.state
+    const { status, subjects, domains, authors, keys } = this.state
     console.log('status', status, 'subjects', subjects, 'domains', domains)
 
-    if (status === 1) {
+    if (status === 3) {
+      console.log(3, status === 3)
       return (
-        <View className="catalog subjects">
+        <View className="catalog authors">
           <View className="catalog-header">
-            <Text>请选择您关注的学科</Text>
-            <Text className="subtitle">（最多三个）</Text>
+            <Text>请设置您关注的作者</Text>
+            <Text className="subtitle">（可选，最多五个）</Text>
           </View>
           <View className="catalog-body">
             <ScrollView scrollY className="scroll-view">
               <View className="buttons">
-                {SUBJECTS.map(s => {
-                  const i = subjects.indexOf(s)
+                {authors.map(a => {
                   return (
-                    <Button
-                      key={s}
-                      className={`button${i !== -1 ? ' selected' : ''}`}
-                      onClick={() => this.selectSubject(s, i)}
-                    >
-                      {s}
+                    <Button key={a} className="button">
+                      {a}
                     </Button>
                   )
                 })}
+              </View>
+              <View className="actions">
+                <Button
+                  key="add"
+                  className="button"
+                  onClick={() => this.toggleInputDialog(1)}
+                >
+                  + 点击增加作者
+                </Button>
+              </View>
+            </ScrollView>
+          </View>
+          <View className="catalog-header">
+            <Text>请设置您关注的标题关键词</Text>
+            <Text className="subtitle">（可选，最多五个）</Text>
+          </View>
+          <View className="catalog-body">
+            <ScrollView scrollY className="scroll-view">
+              <View className="buttons">
+                {keys.map(k => {
+                  return (
+                    <Button key={k} className="button">
+                      {k}
+                    </Button>
+                  )
+                })}
+              </View>
+              <View className="actions">
+                <Button
+                  key="add"
+                  className="button"
+                  onClick={() => this.toggleInputDialog(2)}
+                >
+                  + 点击增加关键词
+                </Button>
               </View>
             </ScrollView>
           </View>
         </View>
       )
-    }
-    if (status === 2) {
+    } else if (status === 2) {
+      console.log(2, status === 2)
       const DOMAINS = subjects
         .map(s => ARXIV[s])
         .sort((a, b) => a.length - b.length)
-        .reduce((a, b) => a.concat(b))
+        .reduce((a, b) => a.concat(b), [])
       return (
         <View className="catalog domains">
           <View className="catalog-header">
@@ -302,39 +367,114 @@ export default class Index extends Component {
         </View>
       )
     }
+    console.log(1, status === 1)
 
     return (
-      <View className="catalog authors">
+      <View className="catalog subjects">
         <View className="catalog-header">
-          <Text>请设置您关注的作者</Text>
-          <Text className="subtitle">（可选，最多五个）</Text>
+          <Text>请选择您关注的学科</Text>
+          <Text className="subtitle">（最多三个）</Text>
         </View>
         <View className="catalog-body">
           <ScrollView scrollY className="scroll-view">
-            <View className="buttons" />
-            <View className="actions">
-              <Button key="add" className="button" onClick={() => {}}>
-                + 点击增加作者
-              </Button>
-            </View>
-          </ScrollView>
-        </View>
-        <View className="catalog-header">
-          <Text>请设置您关注的标题关键词</Text>
-          <Text className="subtitle">（可选，最多五个）</Text>
-        </View>
-        <View className="catalog-body">
-          <ScrollView scrollY className="scroll-view">
-            <View className="buttons" />
-            <View className="actions">
-              <Button key="add" className="button" onClick={() => {}}>
-                + 点击增加关键词
-              </Button>
+            <View className="buttons">
+              {SUBJECTS.map(s => {
+                const i = subjects.indexOf(s)
+                return (
+                  <Button
+                    key={s}
+                    className={`button${i === -1 ? '' : ' selected'}`}
+                    onClick={() => this.selectSubject(s, i)}
+                  >
+                    {s}
+                  </Button>
+                )
+              })}
             </View>
           </ScrollView>
         </View>
       </View>
     )
+  }
+
+  onInput = ({ detail: { value } }) => {
+    const disabledInput = !value
+    const values = {
+      disabledInput
+    }
+    if (!disabledInput) {
+      values.inputValue = value
+    }
+    this.setState(values)
+  }
+
+  toggleInputDialog = s =>
+    this.setState({
+      showInputDialog: s
+    })
+
+  send = () => {
+    if (this.state.showInputDialog === 1) {
+      if (this.state.authors.includes(this.state.inputValue)) {
+        return
+      }
+      this.setState(({ authors }) => {
+        authors = [...authors]
+        authors.push(this.state.inputValue)
+        this.refs.input.value = ''
+        this.refs.input.focus()
+        return {
+          authors,
+          inputValue: '',
+          showInputDialog: 0,
+          disabledInput: authors.length === 5
+        }
+      })
+    } else if (this.state.showInputDialog === 2) {
+      if (this.state.keys.includes(this.state.inputValue)) {
+        return
+      }
+      this.setState(({ keys }) => {
+        keys = [...keys]
+        keys.push(this.state.inputValue)
+        this.refs.input.value = ''
+        this.refs.input.focus()
+        return {
+          keys,
+          inputValue: '',
+          showInputDialog: 0,
+          disabledInput: keys.length === 5
+        }
+      })
+    }
+  }
+
+  onScrollToUpper = e => {
+    console.log(e)
+  }
+
+  onScrollToLower = e => {
+    if (this.state.pullUp === 0 && this.state.page < this.state.total) {
+      this.setState(
+        {
+          pullUp: 1,
+          page: this.state.page + 1
+        },
+        () => {
+          this.fetch()
+            .then(() => {
+              this.setState({
+                pullUp: this.state.page === this.state.total ? 2 : 0
+              })
+            })
+            .catch(() => {
+              this.setState({
+                pullUp: 0
+              })
+            })
+        }
+      )
+    }
   }
 
   render() {
@@ -361,7 +501,7 @@ export default class Index extends Component {
                 className="button big primary"
                 onClick={this.next}
               >
-                {this.state.status === 2 ? '保存' : '继续'}
+                {this.state.status === 3 ? '保存' : '继续'}
               </Button>
             </View>
           </View>
@@ -370,7 +510,7 @@ export default class Index extends Component {
             <View className="columns section-header">
               <View className="column left">
                 <Text className="title">arXiv日报</Text>
-                <Text className="subtitle">{this.state.date}期</Text>
+                <Text className="subtitle">{this.state.date.substr(5)}期</Text>
               </View>
               <View className="column right">
                 <View className="tags">
@@ -382,40 +522,68 @@ export default class Index extends Component {
             </View>
 
             <View className="section-body read-list">
-              <ScrollView scrollY className="scroll-view">
-                <View className="list">
-                  {this.state.data.map((a, i) => (
-                    <View key={a._id} className="item">
-                      <View className="item-recommend">
-                        <Text>根据 {a.recommend_by} 推荐</Text>
-                      </View>
-                      <View className="item-title">
-                        <Text>{a.title}</Text>
-                      </View>
-                      <View className="item-description">
-                        <Text>{a.info}</Text>
-                      </View>
-                      <View className="columns item-author">
-                        <View className="column left">
-                          <Text>{a.author}</Text>
+              {this.state.list.length ? (
+                <ScrollView
+                  scrollY
+                  className="scroll-view"
+                  onScrollToUpper={this.onScrollToUpper}
+                  onScrollToLower={this.onScrollToLower}
+                >
+                  <View className="list">
+                    {this.state.lsit.map((a, i) => (
+                      <View key={a._id} className="item">
+                        <View className="item-recommend">
+                          <Text>根据 {a.recommend_by} 推荐</Text>
                         </View>
-                        <View className="column right">
-                          <Image
-                            aria-role="button"
-                            // mode="widthFix"
-                            className="column icon-heart"
-                            src={a.collected ? HEART_SOLID : HEART}
-                            onClick={() => this.collect(a, i)}
-                          />
+                        <View className="item-title">
+                          <Text>{a.title}</Text>
+                        </View>
+                        <View className="item-description">
+                          <Text>{a.info}</Text>
+                        </View>
+                        <View className="columns item-author">
+                          <View className="column left">
+                            <Text>{a.author}</Text>
+                          </View>
+                          <View className="column right">
+                            <Image
+                              aria-role="button"
+                              // mode="widthFix"
+                              className="column icon-heart"
+                              src={a.collected ? HEART_SOLID : HEART}
+                              onClick={() => this.collect(a, i)}
+                            />
+                          </View>
                         </View>
                       </View>
+                    ))}
+                  </View>
+                </ScrollView>
+              ) : this.state.loading ? null : (
+                <View className="empty">
+                  <Image
+                    mode="widthFix"
+                    className="icon-collection-empty"
+                    src={ARXIV_EMPTY}
+                  />
+                  <View className="tips">
+                    <View>
+                      <Text>很遗憾</Text>
                     </View>
-                  ))}
+                    <View>
+                      <Text>今天没有你关注的新玩意</Text>
+                    </View>
+                  </View>
                 </View>
-              </ScrollView>
+              )}
             </View>
 
-            {/* <View className="section-footer" /> */}
+            <View className="section-footer loading">
+              {this.state.pullUp === 1 ? <Text>正在加载后续部分…</Text> : null}
+              {this.state.pullUp === 2 ? (
+                <Text>以上就是今日所有新鲜玩意</Text>
+              ) : null}
+            </View>
             <View className="affix">
               <Navigator url="/pages/collection/collection">
                 <Image
@@ -428,6 +596,61 @@ export default class Index extends Component {
             </View>
           </View>
         )}
+        <View className={`dialog${this.state.loading ? ' open' : ''}`}>
+          <View className="card loading">
+            <View class="coffee-mug">
+              <View className="coffee-container">
+                <View className="coffee" />
+              </View>
+            </View>
+            <View class="tips">
+              <Text>正在更新今日新番</Text>
+            </View>
+          </View>
+        </View>
+
+        <View className={`dialog${this.state.showInputDialog ? ' open' : ''}`}>
+          <View className="card">
+            <View className="card-wrap">
+              <View className="card-header">
+                <Text>
+                  添加{this.state.showInputDialog === 1 ? '作者' : '关键词'}
+                </Text>
+              </View>
+              <View className="card-body">
+                <View className="input-wrap">
+                  <Input
+                    ref="input"
+                    focus
+                    value={this.state.inputValue}
+                    className="input"
+                    placeholder={`请输入${
+                      this.state.showInputDialog === 1 ? '作者' : '关键词'
+                    }`}
+                    onInput={this.onInput}
+                  />
+                </View>
+                <View className="tip">模糊查询，填写关键词即可</View>
+              </View>
+              <View className="card-footer">
+                <Button
+                  className="button mid primary"
+                  disabled={this.state.disabledInput}
+                  onClick={() => this.send()}
+                >
+                  确认
+                </Button>
+              </View>
+            </View>
+          </View>
+          <Image
+            aria-role="button"
+            className="icon-close"
+            mode="widthFix"
+            src={CLOSE}
+            onClick={() => this.toggleInputDialog(0)}
+          />
+        </View>
       </View>
     )
   }
