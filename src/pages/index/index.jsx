@@ -247,12 +247,31 @@ export default class Index extends Component {
         .then(res => {
           Taro.stopPullDownRefresh()
           this.setState(({ list }) => {
-            list = [...list].concat(res.list)
+            list = [...list].concat(
+              res.list.map(item => {
+                if (item.recommend_by > 40) {
+                  item.recommend_by = item.recommend_by.substr(0, 37) + '...'
+                }
+                if (item.title.length > 100) {
+                  item.title = item.title.substr(0, 97) + '...'
+                }
+                if (item.info.length > 130) {
+                  item.info = item.info.substr(0, 127) + '...'
+                }
+                if (item.author.length > 50) {
+                  item.author = item.author.substr(0, 47) + '...'
+                }
+                return item
+              })
+            )
+
             return {
               list,
+              total: res.total,
               loading: false
             }
           })
+          return res
         })
         .catch(err => {
           Taro.stopPullDownRefresh()
@@ -288,11 +307,17 @@ export default class Index extends Component {
           <View className="catalog-body">
             <ScrollView scrollY className="scroll-view">
               <View className="buttons">
-                {authors.map(a => {
+                {authors.map((k, i) => {
                   return (
-                    <Button key={a} className="button">
-                      {a}
-                    </Button>
+                    <View key={k} className="button has-addons">
+                      <Button className="button">{k}</Button>
+                      <Button
+                        className="button close"
+                        onClick={() => this.deleteAuthor(i)}
+                      >
+                        X
+                      </Button>
+                    </View>
                   )
                 })}
               </View>
@@ -314,11 +339,17 @@ export default class Index extends Component {
           <View className="catalog-body">
             <ScrollView scrollY className="scroll-view">
               <View className="buttons">
-                {keys.map(k => {
+                {keys.map((k, i) => {
                   return (
-                    <Button key={k} className="button">
-                      {k}
-                    </Button>
+                    <View key={k} className="button has-addons">
+                      <Button className="button">{k}</Button>
+                      <Button
+                        className="button close"
+                        onClick={() => this.deleteKey(i)}
+                      >
+                        X
+                      </Button>
+                    </View>
                   )
                 })}
               </View>
@@ -350,12 +381,13 @@ export default class Index extends Component {
             <ScrollView scrollY className="scroll-view">
               <View className="buttons">
                 {DOMAINS.map(d => {
-                  const i = domains.indexOf(d)
                   return (
                     <Button
                       key={d}
-                      className={`button${i !== -1 ? ' selected' : ''}`}
-                      onClick={() => this.selectDomain(d, i)}
+                      className={`button${
+                        domains.indexOf(d) !== -1 ? ' selected' : ''
+                      }`}
+                      onClick={() => this.selectDomain(d, domains.indexOf(d))}
                     >
                       {d}
                     </Button>
@@ -379,12 +411,13 @@ export default class Index extends Component {
           <ScrollView scrollY className="scroll-view">
             <View className="buttons">
               {SUBJECTS.map(s => {
-                const i = subjects.indexOf(s)
                 return (
                   <Button
                     key={s}
-                    className={`button${i === -1 ? '' : ' selected'}`}
-                    onClick={() => this.selectSubject(s, i)}
+                    className={`button${
+                      subjects.indexOf(s) === -1 ? '' : ' selected'
+                    }`}
+                    onClick={() => this.selectSubject(s, subjects.indexOf(s))}
                   >
                     {s}
                   </Button>
@@ -422,7 +455,6 @@ export default class Index extends Component {
         authors = [...authors]
         authors.push(this.state.inputValue)
         this.refs.input.value = ''
-        this.refs.input.focus()
         return {
           authors,
           inputValue: '',
@@ -438,7 +470,6 @@ export default class Index extends Component {
         keys = [...keys]
         keys.push(this.state.inputValue)
         this.refs.input.value = ''
-        this.refs.input.focus()
         return {
           keys,
           inputValue: '',
@@ -449,11 +480,33 @@ export default class Index extends Component {
     }
   }
 
+  deleteAuthor = index => {
+    this.setState(({ authors }) => {
+      authors = [...authors]
+      authors.splice(index, 1)
+      return {
+        authors
+      }
+    })
+  }
+
+  deleteKey = index => {
+    this.setState(({ keys }) => {
+      keys = [...keys]
+      keys.splice(index, 1)
+      return {
+        keys
+      }
+    })
+  }
+
   onScrollToUpper = e => {
     console.log(e)
+    Taro.startPullDownRefresh()
   }
 
   onScrollToLower = e => {
+    console.log(233, this.state.pullUp, this.state.page, this.state.total)
     if (this.state.pullUp === 0 && this.state.page < this.state.total) {
       this.setState(
         {
@@ -462,9 +515,12 @@ export default class Index extends Component {
         },
         () => {
           this.fetch()
-            .then(() => {
+            .then(res => {
               this.setState({
-                pullUp: this.state.page === this.state.total ? 2 : 0
+                pullUp:
+                  this.state.page === this.state.total || res.list.length === 0
+                    ? 2
+                    : 0
               })
             })
             .catch(() => {
@@ -530,7 +586,7 @@ export default class Index extends Component {
                   onScrollToLower={this.onScrollToLower}
                 >
                   <View className="list">
-                    {this.state.lsit.map((a, i) => (
+                    {this.state.list.map((a, i) => (
                       <View key={a._id} className="item">
                         <View className="item-recommend">
                           <Text>根据 {a.recommend_by} 推荐</Text>
@@ -596,7 +652,11 @@ export default class Index extends Component {
             </View>
           </View>
         )}
-        <View className={`dialog${this.state.loading ? ' open' : ''}`}>
+        <View
+          className={`dialog${
+            this.state.loading && this.state.pullUp === 0 ? ' open' : ''
+          }`}
+        >
           <View className="card loading">
             <View class="coffee-mug">
               <View className="coffee-container">

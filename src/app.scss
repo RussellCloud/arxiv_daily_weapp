@@ -505,3 +505,21 @@ page {
     bottom: -45rpx;
   }
 }
+
+.authors,
+.keys {
+  .buttons .button {
+    margin-right: 20rpx;
+    overflow: hidden;
+    .button {
+      margin: 0 !important;
+      height: auto !important;
+      border: none !important;
+      border-radius: 0 !important;
+
+      &.close {
+        background: #979797;
+      }
+    }
+  }
+}
