@@ -14,6 +14,7 @@ const config = {
   alias: {
     '@/api': path.resolve(__dirname, '..', 'src/api'),
     '@/arxiv': path.resolve(__dirname, '..', 'src/arxiv'),
+    '@/config': path.resolve(__dirname, '..', 'src/config'),
     '@/asserts': path.resolve(__dirname, '..', 'src/asserts'),
     '@/components': path.resolve(__dirname, '..', 'src/components')
   },

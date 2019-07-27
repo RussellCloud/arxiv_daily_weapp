@@ -13,7 +13,6 @@ import X from '@/asserts/x@2x.png'
 import api from '@/api'
 import ARXIV from '@/arxiv'
 import './settings.scss'
-import { timingSafeEqual } from 'crypto'
 
 const SUBJECTS = Object.keys(ARXIV)
 
@@ -34,7 +33,7 @@ export default class Settings extends Component {
     showBack: false,
     dialogType: 0,
     dialogValue: '',
-    dialogOpened: false,
+    dialogOpened: 0,
     dialogDisabled: true,
     subjectsIndex: [],
     subjects: [],
@@ -138,14 +137,25 @@ export default class Settings extends Component {
     })
   }
 
-  toggleDialog = t =>
-    this.setState({
-      dialogOpened: t > 0,
-      dialogType: t
+  toggleDialog = t => {
+    this.setState(({ authors, keys }) => {
+      const values = {}
+      if (t === 1 && authors.length === 10) {
+        values.dialogOpened = 2
+        return values
+      }
+      if (t === 2 && keys.length === 10) {
+        values.dialogOpened = 2
+        return values
+      }
+      values.dialogOpened = t === 0 ? 0 : t === 3 ? 2 : 1
+      values.dialogType = t
+      return values
     })
+  }
 
   onDialogInput = ({ detail: { value } }) => {
-    const dialogDisabled = !value
+    const dialogDisabled = !value || !value.trim()
     const values = {
       dialogDisabled
     }
@@ -158,9 +168,11 @@ export default class Settings extends Component {
   save = () => {
     this.setState(({ dialogType, dialogValue, authors, keys }) => {
       const values = {
-        dialogOpened: false,
+        dialogDisabled: true,
+        dialogOpened: 0,
         dialogValue: ''
       }
+
       if (dialogType === 1) {
         if (authors.includes(dialogValue)) {
           return values
@@ -229,7 +241,6 @@ export default class Settings extends Component {
         )
         Taro.setStorageSync('authors', authors)
         Taro.setStorageSync('keys', keys)
-        console.log(233)
         return {
           goHome: true
         }
@@ -276,11 +287,11 @@ export default class Settings extends Component {
                     <View className='buttons'>
                       {this.state.subjects.map((s, i) => (
                         <Button
-                          key={i}
+                          key={s.name}
+                          onClick={() => this.toggleSubject(i)}
                           className={`button${
                             s.selected === true ? ' selected' : ''
                           }`}
-                          onClick={() => this.toggleSubject(i)}
                         >
                           {s.name}
                         </Button>
@@ -302,11 +313,11 @@ export default class Settings extends Component {
                       {this.state.domains.map((s, i) => {
                         return (
                           <Button
-                            key={i}
+                            key={s.name}
+                            onClick={() => this.toggleDomain(i)}
                             className={`button${
                               s.selected === true ? ' selected' : ''
                             }`}
-                            onClick={() => this.toggleDomain(i)}
                           >
                             {s.name}
                           </Button>
@@ -322,14 +333,14 @@ export default class Settings extends Component {
               <View className='catalog authors'>
                 <View className='catalog-header'>
                   <Text>请设置您关注的作者</Text>
-                  <Text className='subtitle'>（可选，最多五个）</Text>
+                  <Text className='subtitle'>（可选，最多十个）</Text>
                 </View>
                 <View className='catalog-body'>
                   <ScrollView scrollY className='scroll-view'>
                     <View className='buttons'>
                       {this.state.authors.map((k, i) => {
                         return (
-                          <View key={i} className='button has-addons'>
+                          <View key={k} className='button has-addons'>
                             <View class='left'>
                               <Text>{k}</Text>
                             </View>
@@ -361,14 +372,14 @@ export default class Settings extends Component {
                 </View>
                 <View className='catalog-header'>
                   <Text>请设置您关注的标题关键词</Text>
-                  <Text className='subtitle'>（可选，最多五个）</Text>
+                  <Text className='subtitle'>（可选，最多十个）</Text>
                 </View>
                 <View className='catalog-body'>
                   <ScrollView scrollY className='scroll-view'>
                     <View className='buttons'>
                       {this.state.keys.map((k, i) => {
                         return (
-                          <View key={i} className='button has-addons'>
+                          <View key={k} className='button has-addons'>
                             <View class='left'>
                               <Text>{k}</Text>
                             </View>
@@ -416,7 +427,7 @@ export default class Settings extends Component {
             </Button>
           </View>
         </View>
-        {this.state.dialogOpened === true ? (
+        {this.state.dialogOpened === 1 ? (
           <View className='dialog open'>
             <View className='card'>
               <View className='card-wrap'>
@@ -445,6 +456,38 @@ export default class Settings extends Component {
                     onClick={this.save}
                   >
                     确认
+                  </Button>
+                </View>
+              </View>
+            </View>
+            <Image
+              aria-role='button'
+              className='icon-close'
+              mode='widthFix'
+              src={CLOSE}
+              onClick={() => this.toggleDialog(0)}
+            />
+          </View>
+        ) : null}
+        {this.state.dialogOpened === 2 ? (
+          <View className='dialog open'>
+            <View className='card email'>
+              <View className='card-wrap'>
+                <View className='card-header'>
+                  <Text>数量超额提醒</Text>
+                </View>
+                <View className='card-body'>
+                  <View className='content'>
+                    <Text>当前已达到最高数量限制</Text>
+                    <Text>请删除现有关键词后再添加</Text>
+                  </View>
+                </View>
+                <View className='card-footer'>
+                  <Button
+                    className='button mid primary'
+                    onClick={() => this.toggleDialog(0)}
+                  >
+                    返回
                   </Button>
                 </View>
               </View>

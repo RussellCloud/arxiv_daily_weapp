@@ -2,15 +2,14 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Text, ScrollView, Image, Navigator } from '@tarojs/components'
 import Navbar from '@/components/navbar'
 import api from '@/api'
+import config from '@/config'
 import HEART from '@/asserts/heart@2x.png'
 import HEART_SOLID from '@/asserts/heart-solid@2x.png'
 import COLLECT from '@/asserts/collect@2x.png'
 import ARXIV_EMPTY from '@/asserts/arxiv-empty@2x.png'
 import './index.scss'
 
-const getDate = () => {
-  return '2019-07-26'
-  const today = new Date()
+const formatDate = today => {
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
     2,
     '0'
@@ -47,9 +46,11 @@ export default class Index extends Component {
   state = {
     loading: false,
     cleanup: false,
-    scrollTop: 0,
+    // scrollTop: 0,
     status: 0,
     date: '',
+    weekend: false,
+    tipIndex: 0,
     domains: [],
     authors: [],
     keys: [],
@@ -98,23 +99,27 @@ export default class Index extends Component {
 
   fetch = () => {
     console.log(this.state.status, this.state.pullUp)
-    if (this.state.status === 1) {
-      if (this.state.direction === 0) {
+    const {
+      state: { status, direction, domains, authors, keys, date, page, pre_page }
+    } = this
+    if (status === 1) {
+      if (direction === 0) {
         this.setState({
           cleanup: true,
           loading: true
         })
       }
       const start = Date.now()
+      console.log('direction', direction, start)
 
       return api
         .search({
-          subject: this.state.domains,
-          author: this.state.authors,
-          title: this.state.keys,
-          date: this.state.date,
-          page: this.state.page,
-          pre_page: this.state.pre_page
+          subject: domains,
+          author: authors,
+          title: keys,
+          date: date,
+          page: page,
+          pre_page: pre_page
         })
         .catch(err => {
           console.log('fetch error', err)
@@ -126,35 +131,39 @@ export default class Index extends Component {
         .then(res => {
           return new Promise(resolve => {
             const end = Date.now()
-            setTimeout(() => {
-              Taro.stopPullDownRefresh()
-              this.setState(
-                ({ list, cleanup, collection }) => {
-                  if (cleanup) {
-                    list = []
-                  }
-                  const { total, list: nl } = res
-                  list = [...list].concat(
-                    nl.map(item => {
-                      formatData(item)
-                      item.collected = Boolean(
-                        collection.find(c => c._id === item._id)
-                      )
-                      return item
-                    })
-                  )
+            console.log('direction', direction, end)
+            setTimeout(
+              () => {
+                Taro.stopPullDownRefresh()
+                this.setState(
+                  ({ list, cleanup, collection }) => {
+                    if (cleanup) {
+                      list = []
+                    }
+                    const { total, list: nl } = res
+                    list = [...list].concat(
+                      nl.map(item => {
+                        formatData(item)
+                        item.collected = Boolean(
+                          collection.find(c => c._id === item._id)
+                        )
+                        return item
+                      })
+                    )
 
-                  // list.forEach(p => console.log(p._id, p.collected))
-                  return {
-                    total,
-                    list,
-                    cleanup: false,
-                    loading: false
-                  }
-                },
-                () => resolve(res)
-              )
-            }, 1000 - (end - start))
+                    // list.forEach(p => console.log(p._id, p.collected))
+                    return {
+                      total,
+                      list,
+                      cleanup: false,
+                      loading: false
+                    }
+                  },
+                  () => resolve(res)
+                )
+              },
+              direction === 0 ? 1000 - (end - start) : 0
+            )
           })
         })
     }
@@ -187,15 +196,20 @@ export default class Index extends Component {
         can = true
       }
 
-      const today = getDate()
-      if (date && date !== today) {
+      const today = new Date()
+      const now = formatDate(today)
+      if (date && date !== now) {
+        // 清除前一天数据
         Taro.removeStorageSync('collection')
         values.collection = []
       } else {
         values.collection = collection
       }
-      values.date = today
-      Taro.setStorageSync('date', today)
+      const weekend = today.getDay() % 6 === 0
+      values.date = now
+      values.weekend = weekend
+      values.tipIndex = weekend ? Math.ceil(Math.random() * 2) : 1
+      Taro.setStorageSync('date', now)
 
       return {
         values,
@@ -263,7 +277,11 @@ export default class Index extends Component {
           <View className='columns section-header'>
             <View className='column left'>
               <Text className='title'>arXiv日报</Text>
-              <Text className='subtitle'>{this.state.date.substr(5)}期</Text>
+              {this.state.weekend ? (
+                <Text className='subtitle'>今日不营业</Text>
+              ) : (
+                <Text className='subtitle'>{this.state.date.substr(5)}期</Text>
+              )}
             </View>
             <View className='column right'>
               <View className='tags'>
@@ -282,8 +300,8 @@ export default class Index extends Component {
                 <ScrollView
                   scrollY
                   enableFlex
-                  // enableBackToTop
                   className='scroll-view'
+                  // enableBackToTop
                   // scrollTop={this.state.scrollTop}
                   onScrollToUpper={this.onScrollToUpper}
                   onScrollToLower={this.onScrollToLower}
@@ -337,10 +355,10 @@ export default class Index extends Component {
                   />
                   <View className='tips'>
                     <View>
-                      <Text>很遗憾</Text>
+                      <Text>{config.tips[this.state.tipIndex].t}</Text>
                     </View>
                     <View>
-                      <Text>今天没有你关注的新玩意</Text>
+                      <Text>{config.tips[this.state.tipIndex].st}</Text>
                     </View>
                   </View>
                 </View>
