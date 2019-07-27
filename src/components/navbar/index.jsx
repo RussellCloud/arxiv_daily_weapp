@@ -41,24 +41,24 @@ export default class Navbar extends Component {
     const hasBackLabel = this.props.backLabel ? ' has-label' : ''
     return (
       <CoverView className={nbc} style={Navbar.options.nbs}>
-        <CoverView className="navbar-container" style={Navbar.options.ncs}>
+        <CoverView className='navbar-container' style={Navbar.options.ncs}>
           <CoverView className={`navbar-start${hasBackLabel}`}>
             {this.props.showBack ? (
-              <CoverView className="back">
-                <Navigator open-type="navigateBack">
-                  <CoverImage className="icon-back" src={BACK} />
+              <CoverView className='back'>
+                <Navigator open-type='navigateBack'>
+                  <CoverImage className='icon-back' src={BACK} />
                   {this.props.backLabel ? (
-                    <CoverView className="label">
+                    <CoverView className='label'>
                       {this.props.backLabel}
                     </CoverView>
                   ) : null}
                 </Navigator>
               </CoverView>
             ) : (
-              <CoverView className="back" />
+              <CoverView className='back' />
             )}
           </CoverView>
-          <CoverView className="navbar-title">{this.props.title}</CoverView>
+          <CoverView className='navbar-title'>{this.props.title}</CoverView>
           <CoverView className={`navbar-end${hasBackLabel}`} />
         </CoverView>
       </CoverView>

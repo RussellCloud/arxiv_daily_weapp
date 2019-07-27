@@ -1,9 +1,14 @@
 import Taro from '@tarojs/taro'
+
 const API_URL = 'https://arxiv.russellcloud.com/v1'
 
 export default {
-  search(data) {
-    return Taro.request({
+  getStorage: key =>
+    Taro.getStorage({ key })
+      .then(({ data }) => data)
+      .catch(() => []),
+  search: data =>
+    Taro.request({
       url: `${API_URL}/search`,
       method: 'POST',
       data
@@ -14,10 +19,9 @@ export default {
       const error = new Error(data.data)
       error.code = data.code
       throw error
-    })
-  },
-  send(data) {
-    return Taro.request({
+    }),
+  send: data =>
+    Taro.request({
       url: `${API_URL}/send`,
       method: 'POST',
       data
@@ -29,5 +33,4 @@ export default {
       error.code = data.code
       throw error
     })
-  }
 }

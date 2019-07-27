@@ -106,11 +106,11 @@ export default {
     'Other Statistics',
     'Statistics Theory'
   ],
+  Economics: ['Econometrics', 'General Economics', 'Theoretical Economics'],
   'Electrical Engineering and Systems Science': [
     'Audio and Speech Processing',
     'Image and Video Processing',
     'Signal Processing',
     'Systems and Control'
-  ],
-  Economics: ['Econometrics', 'General Economics', 'Theoretical Economics']
+  ]
 }

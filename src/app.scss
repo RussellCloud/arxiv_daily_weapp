@@ -83,8 +83,20 @@ page {
   &-footer {
     flex: none;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     height: 140rpx;
+    position: relative;
+
+    .tips {
+      position: absolute;
+      top: 0;
+      font-size: 20rpx;
+      line-height: 28rpx;
+      color: #797878;
+      text-align: center;
+    }
 
     &.loading {
       justify-content: center;
@@ -169,22 +181,42 @@ page {
 
       .button {
         display: inline-flex;
-        margin-top: 20rpx;
+        // margin-top: 20rpx;
         margin-bottom: 20rpx;
 
-        // &:not(:last-child) {
-        //   margin-right: 20rpx;
-        // }
+        &:not(:last-child) {
+          margin-right: 20rpx;
+        }
 
         &.selected {
           border-color: rgba(0, 0, 0, 0);
           color: #fff;
           background-color: #009688;
         }
+
+        &.has-addons {
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          .left {
+            padding-left: 20rpx;
+            padding-right: 20rpx;
+          }
+          .right {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50rpx;
+            height: 100%;
+            background: #b0aeae;
+          }
+        }
       }
     }
 
     .actions {
+      // margin-top: 20rpx;
+      margin-bottom: 20rpx;
       .button {
         margin-left: 0;
         width: 260rpx;
@@ -305,6 +337,10 @@ page {
   width: 200rpx;
   height: auto;
 }
+.icon-x {
+  width: 20rpx;
+  height: auto;
+}
 
 .dialog {
   display: flex;
@@ -324,6 +360,8 @@ page {
   // transition: opacity 0.267s ease 0s;
   will-change: opacity;
   background-color: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  pointer-events: none;
 
   &.open {
     opacity: 1;
@@ -345,6 +383,7 @@ page {
     box-sizing: border-box;
     color: #797878;
     padding: 37rpx 54rpx 34rpx;
+    pointer-events: auto;
 
     &-wrap {
       flex: 1;
@@ -368,6 +407,13 @@ page {
       justify-content: center;
       align-items: center;
       width: 100%;
+
+      .content {
+        font-size: 30rpx;
+        font-weight: 500;
+        line-height: 42rpx;
+        text-align: center;
+      }
 
       .input-wrap {
         width: 100%;
@@ -503,23 +549,6 @@ page {
   .icon-close {
     position: relative;
     bottom: -45rpx;
-  }
-}
-
-.authors,
-.keys {
-  .buttons .button {
-    margin-right: 20rpx;
-    overflow: hidden;
-    .button {
-      margin: 0 !important;
-      height: auto !important;
-      border: none !important;
-      border-radius: 0 !important;
-
-      &.close {
-        background: #979797;
-      }
-    }
+    pointer-events: auto;
   }
 }
