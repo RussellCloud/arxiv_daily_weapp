@@ -208,7 +208,7 @@ export default class Index extends Component {
       const weekend = today.getDay() % 6 === 0
       values.date = now
       values.weekend = weekend
-      values.tipIndex = weekend ? Math.ceil(Math.random() * 2) : 1
+      values.tipIndex = weekend ? Math.ceil(Math.random() * 2) : 0
       Taro.setStorageSync('date', now)
 
       return {
