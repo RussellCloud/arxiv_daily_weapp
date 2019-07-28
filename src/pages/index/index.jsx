@@ -98,7 +98,7 @@ export default class Index extends Component {
   }
 
   fetch = () => {
-    console.log(this.state.status, this.state.pullUp)
+    console.log(this.state.status, this.state.direction)
     const {
       state: { status, direction, domains, authors, keys, date, page, pre_page }
     } = this
@@ -277,7 +277,7 @@ export default class Index extends Component {
           <View className='columns section-header'>
             <View className='column left'>
               <Text className='title'>arXiv日报</Text>
-              {this.state.weekend ? (
+              {this.state.weekend === true ? (
                 <Text className='subtitle'>今日不营业</Text>
               ) : (
                 <Text className='subtitle'>{this.state.date.substr(5)}期</Text>

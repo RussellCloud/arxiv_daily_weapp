@@ -12,5 +12,8 @@ export default {
       t: '请等待',
       st: '本店周一才到货'
     }
-  ]
+  ],
+  MAX_SUBJECTS: 3,
+  MAX_AUTHORS: 10,
+  MAX_KEYS: 10
 }

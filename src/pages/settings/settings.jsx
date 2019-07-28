@@ -11,6 +11,7 @@ import Navbar from '@/components/navbar'
 import CLOSE from '@/asserts/close@2x.png'
 import X from '@/asserts/x@2x.png'
 import api from '@/api'
+import { MAX_SUBJECTS, MAX_AUTHORS, MAX_KEYS } from '@/config'
 import ARXIV from '@/arxiv'
 import './settings.scss'
 
@@ -104,7 +105,7 @@ export default class Settings extends Component {
         subjectsIndex.splice(subjectsIndex.indexOf(index), 1)
       }
       const count = subjectsIndex.length
-      if (count > 3) {
+      if (count > MAX_SUBJECTS) {
         subjects[subjectsIndex.shift()].selected = false
       }
       return {
@@ -140,11 +141,11 @@ export default class Settings extends Component {
   toggleDialog = t => {
     this.setState(({ authors, keys }) => {
       const values = {}
-      if (t === 1 && authors.length === 10) {
+      if (t === 1 && authors.length === MAX_AUTHORS) {
         values.dialogOpened = 2
         return values
       }
-      if (t === 2 && keys.length === 10) {
+      if (t === 2 && keys.length === MAX_KEYS) {
         values.dialogOpened = 2
         return values
       }

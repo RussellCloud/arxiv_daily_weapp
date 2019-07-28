@@ -151,7 +151,6 @@ export default class Collection extends Component {
                 className='input'
                 placeholder='请输入邮箱地址'
                 onInput={this.onInput}
-                ref='input'
               />
             </View>
             <View className='tip'>
@@ -191,13 +190,13 @@ export default class Collection extends Component {
     return (
       <View className='card-wrap'>
         <View className='card-header'>
-          <Text>发送{this.state.status === 3 ? '成功' : '失败'}</Text>
+          <Text>发送{status === 3 ? '成功' : '失败'}</Text>
         </View>
         <View className='card-body'>
           <Image
             className='icon-email-status'
             mode='widthFix'
-            src={this.state.status === 3 ? EMAIL_SUCCESS : EMAIL_FAIL}
+            src={status === 3 ? EMAIL_SUCCESS : EMAIL_FAIL}
           />
         </View>
       </View>
@@ -223,7 +222,23 @@ export default class Collection extends Component {
                 <Text>每日结束时会清空当前收藏夹</Text>
               </View>
               <View className='catalog-body'>
-                {this.state.count ? (
+                {this.state.count === 0 ? (
+                  <View className='empty'>
+                    <Image
+                      mode='widthFix'
+                      className='icon-collection-empty'
+                      src={COLLECTION_EMPTY}
+                    />
+                    <View className='tips'>
+                      <View>
+                        <Text>如你所见</Text>
+                      </View>
+                      <View>
+                        <Text>空空如也</Text>
+                      </View>
+                    </View>
+                  </View>
+                ) : (
                   <ScrollView scrollY className='scroll-view'>
                     <View className='list'>
                       {this.state.collection.map((a, i) => (
@@ -254,22 +269,6 @@ export default class Collection extends Component {
                       ))}
                     </View>
                   </ScrollView>
-                ) : (
-                  <View className='empty'>
-                    <Image
-                      mode='widthFix'
-                      className='icon-collection-empty'
-                      src={COLLECTION_EMPTY}
-                    />
-                    <View className='tips'>
-                      <View>
-                        <Text>如你所见</Text>
-                      </View>
-                      <View>
-                        <Text>空空如也</Text>
-                      </View>
-                    </View>
-                  </View>
                 )}
               </View>
             </View>
@@ -285,7 +284,7 @@ export default class Collection extends Component {
             </Button>
           </View>
         </View>
-        <View className={`dialog${this.state.status ? ' open' : ''}`}>
+        <View className={`dialog${this.state.status > 0 ? ' open' : ''}`}>
           <View className='card email'>{this.renderStep()}</View>
           <Image
             aria-role='button'
