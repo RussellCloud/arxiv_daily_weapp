@@ -27,11 +27,13 @@ page {
 .section {
   display: flex;
   flex-direction: column;
-  padding-left: 30rpx;
-  padding-right: 30rpx;
+  // padding-left: 30rpx;
+  // padding-right: 30rpx;
   flex: 1;
 
   &-header {
+    padding-left: 30rpx;
+    padding-right: 30rpx;
     &.columns {
       flex-direction: row;
       justify-content: space-between;
@@ -157,6 +159,8 @@ page {
   flex: 1;
 
   &-header {
+    padding-left: 30rpx;
+    padding-right: 30rpx;
     color: #797878;
     font-size: 30rpx;
     font-weight: 500;
@@ -175,6 +179,8 @@ page {
     position: relative;
 
     .buttons {
+      padding-left: 30rpx;
+      padding-right: 30rpx;
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
@@ -215,6 +221,8 @@ page {
     }
 
     .actions {
+      padding-left: 30rpx;
+      padding-right: 30rpx;
       // margin-top: 20rpx;
       margin-bottom: 20rpx;
       .button {
@@ -235,6 +243,8 @@ page {
 }
 
 .list {
+  padding-left: 30rpx;
+  padding-right: 30rpx;
   .item {
     padding-bottom: 30rpx;
     box-sizing: border-box;
@@ -262,20 +272,26 @@ page {
       margin-top: 12rpx;
     }
     &-author {
+      position: relative;
       display: flex;
       align-items: center;
       color: #000;
       font-size: 20rpx;
       line-height: 23rpx;
-      margin-top: 12rpx;
+      padding-top: 12rpx;
 
       .left {
-        flex: 1;
+        flex: none;
+        width: calc(100% - 100rpx);
       }
 
       .right {
+        position: absolute;
+        right: 0;
         flex: none;
-        width: 30rpx + 35rpx;
+        padding: 35rpx;
+        width: 30rpx + 35 * 2rpx;
+        box-sizing: border-box;
       }
     }
   }

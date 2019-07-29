@@ -11,10 +11,11 @@ import Navbar from '@/components/navbar'
 import CLOSE from '@/asserts/close@2x.png'
 import X from '@/asserts/x@2x.png'
 import api from '@/api'
-import { MAX_SUBJECTS, MAX_AUTHORS, MAX_KEYS } from '@/config'
+import config from '@/config'
 import ARXIV from '@/arxiv'
 import './settings.scss'
 
+const { MAX_SUBJECTS, MAX_AUTHORS, MAX_KEYS } = config
 const SUBJECTS = Object.keys(ARXIV)
 
 export default class Settings extends Component {

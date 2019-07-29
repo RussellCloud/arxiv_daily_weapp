@@ -1,5 +1,5 @@
 export default {
-  tips: [
+  TIPS: [
     {
       t: '很遗憾',
       st: '今天还没有你关注的新玩意'

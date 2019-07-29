@@ -9,6 +9,8 @@ import COLLECT from '@/asserts/collect@2x.png'
 import ARXIV_EMPTY from '@/asserts/arxiv-empty@2x.png'
 import './index.scss'
 
+const { TIPS } = config
+
 const formatDate = today => {
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
     2,
@@ -327,7 +329,7 @@ export default class Index extends Component {
                             aria-role='button'
                             onClick={() => this.collect(a, i)}
                           >
-                            {a.collected ? (
+                            {a.collected === true ? (
                               <Image
                                 className='column icon-heart'
                                 src={HEART_SOLID}
@@ -355,10 +357,10 @@ export default class Index extends Component {
                   />
                   <View className='tips'>
                     <View>
-                      <Text>{config.tips[this.state.tipIndex].t}</Text>
+                      <Text>{TIPS[this.state.tipIndex].t}</Text>
                     </View>
                     <View>
-                      <Text>{config.tips[this.state.tipIndex].st}</Text>
+                      <Text>{TIPS[this.state.tipIndex].st}</Text>
                     </View>
                   </View>
                 </View>
