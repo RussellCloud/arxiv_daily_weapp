@@ -72,7 +72,6 @@ export default class Collection extends Component {
         status: status === 0 ? 1 : 0
       }),
       () => {
-        console.log(this.state.status)
         if (this.state.status === 1) {
           const value = this.state.email
           this.setState({
@@ -111,18 +110,9 @@ export default class Collection extends Component {
             email: this.state.email,
             collection: this.state.collection.map(c => c._id)
           })
-          .then(res => {
-            console.log('res', res)
-            this.setState({
-              status: 3
-            })
-          })
-          .catch(err => {
-            console.log('err', err)
-            this.setState({
-              status: 4
-            })
-          })
+          .then(() => 3)
+          .catch(() => 4)
+          .then(status => this.setState({ status }))
       }
     )
   }

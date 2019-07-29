@@ -82,7 +82,6 @@ export default class Settings extends Component {
       if (keys.length) {
         values.keys = keys
       }
-      console.log(values)
       this.setState(values)
       this.next()
     })
@@ -227,7 +226,6 @@ export default class Settings extends Component {
               disabled = false
               break
           }
-          console.log(status, disabled)
           return {
             status,
             disabled
@@ -258,7 +256,6 @@ export default class Settings extends Component {
   }
 
   render() {
-    console.log(this.state.subjects)
     return (
       <View className='container settings'>
         <Navbar

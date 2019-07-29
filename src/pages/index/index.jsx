@@ -95,12 +95,9 @@ export default class Index extends Component {
     })
   }
 
-  componentWillMount() {
-    console.log('will mount')
-  }
+  componentWillMount() {}
 
   fetch = () => {
-    console.log(this.state.status, this.state.direction)
     const {
       state: { status, direction, domains, authors, keys, date, page, pre_page }
     } = this
@@ -112,7 +109,6 @@ export default class Index extends Component {
         })
       }
       const start = Date.now()
-      console.log('direction', direction, start)
 
       return api
         .search({
@@ -123,8 +119,7 @@ export default class Index extends Component {
           page: page,
           pre_page: pre_page
         })
-        .catch(err => {
-          console.log('fetch error', err)
+        .catch(() => {
           return {
             list: [],
             total: 0
@@ -133,7 +128,6 @@ export default class Index extends Component {
         .then(res => {
           return new Promise(resolve => {
             const end = Date.now()
-            console.log('direction', direction, end)
             setTimeout(
               () => {
                 Taro.stopPullDownRefresh()
@@ -225,7 +219,6 @@ export default class Index extends Component {
   componentWillUnmount() {}
 
   componentDidShow() {
-    console.log('show')
     this.sync().then(({ can, values }) => {
       if (!can) {
         Taro.navigateTo({
@@ -241,8 +234,7 @@ export default class Index extends Component {
 
   componentDidHide() {}
 
-  onScrollToUpper = e => {
-    console.log(e)
+  onScrollToUpper = () => {
     Taro.startPullDownRefresh()
   }
 
