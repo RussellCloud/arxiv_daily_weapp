@@ -50,10 +50,10 @@ export default class Collection extends Component {
   collect = () => {
     this.setState(({ collection, selectedIndex: index }) => {
       collection = [...collection]
-      collection.splice(index, 1, {
-        ...collection[index],
-        collected: false
-      })
+      const item = collection[index]
+      // item.collected = !item.collected
+      item.collected = false
+      collection.splice(index, 1, item)
       const nc = collection.filter(c => c.collected)
       const count = nc.length
       Taro.setStorageSync('collection', nc)
@@ -124,6 +124,14 @@ export default class Collection extends Component {
   componentDidShow() {}
 
   componentDidHide() {}
+
+  renderTag(p, s) {
+    if (p === true || s === true) {
+      const t = p === true ? 'published' : 'submitted'
+      return <Text className={`tag is-${t}`}>{t}</Text>
+    }
+    return null
+  }
 
   renderStep() {
     const { status } = this.state
@@ -235,6 +243,7 @@ export default class Collection extends Component {
                         <View key={a._id} className='item'>
                           <View className='item-recommend'>
                             <Text>根据 {a.recommend_by} 推荐</Text>
+                            {this.renderTag(a.is_published, a.is_submitted)}
                           </View>
                           <View className='item-title'>
                             <Text>{a.title}</Text>
@@ -246,13 +255,26 @@ export default class Collection extends Component {
                             <View className='column left'>
                               <Text>{a.author}</Text>
                             </View>
-                            <View className='column right'>
-                              <Image
-                                aria-role='button'
-                                className='column icon-heart'
-                                src={a.collected === true ? HEART_SOLID : HEART}
-                                onClick={() => this.toggleDeleteDialog(i)}
-                              />
+                            <View
+                              className='column right'
+                              aria-role='button'
+                              onClick={() =>
+                                a.collected === true &&
+                                this.toggleDeleteDialog(i)
+                              }
+                            >
+                              {a.collected === true ? (
+                                <Image
+                                  className='column icon-heart'
+                                  src={HEART_SOLID}
+                                />
+                              ) : (
+                                <Image
+                                  aria-role='button'
+                                  className='column icon-heart'
+                                  src={HEART}
+                                />
+                              )}
                             </View>
                           </View>
                         </View>

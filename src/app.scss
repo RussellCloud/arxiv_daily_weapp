@@ -67,7 +67,8 @@ page {
       color: #61b58f;
 
       .btn {
-        padding: 20rpx;
+        margin-top: 15rpx;
+        padding: 30rpx 37rpx;
         display: inline-block;
         box-sizing: border-box;
         line-height: 1;
@@ -254,9 +255,35 @@ page {
     }
 
     &-recommend {
+      display: flex;
+      justify-content: space-between;
       color: #747272;
       font-size: 22rpx;
       line-height: 30rpx;
+
+      .tag {
+        display: inline-block;
+        margin-right: 37rpx;
+        border-width: 1px;
+        border-style: solid;
+        font-size: 12rpx;
+        font-weight: 500;
+        width: 74rpx;
+        height: 24rpx;
+        line-height: calc(24rpx - 2px);
+        box-sizing: border-box;
+        text-align: center;
+        text-transform: capitalize;
+
+        &.is-published {
+          color: #1889fa;
+          border-color: #1889fa;
+        }
+        &.is-submitted {
+          color: #0ac15f;
+          border-color: #0ac15f;
+        }
+      }
     }
     &-title {
       color: #000;
@@ -282,16 +309,14 @@ page {
 
       .left {
         flex: none;
-        width: calc(100% - 100rpx);
       }
 
       .right {
         position: absolute;
         right: 0;
         flex: none;
-        padding: 35rpx;
-        width: 30rpx + 35 * 2rpx;
-        box-sizing: border-box;
+        padding: 37rpx;
+        width: 30rpx;
       }
     }
   }

@@ -263,6 +263,14 @@ export default class Index extends Component {
     }
   }
 
+  renderTag(p, s) {
+    if (p === true || s === true) {
+      const t = p === true ? 'published' : 'submitted'
+      return <Text className={`tag is-${t}`}>{t}</Text>
+    }
+    return null
+  }
+
   render() {
     return (
       <View className='container index'>
@@ -305,6 +313,7 @@ export default class Index extends Component {
                       <View key={a._id} className='item'>
                         <View className='item-recommend'>
                           <Text>根据 {a.recommend_by} 推荐</Text>
+                          {this.renderTag(a.is_published, a.is_submitted)}
                         </View>
                         <View className='item-title'>
                           <Text>{a.title}</Text>
