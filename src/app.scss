@@ -262,7 +262,7 @@ page {
       line-height: 30rpx;
 
       .tag {
-        display: inline-block;
+        display: inline-flex;
         margin-right: 37rpx;
         border-width: 1px;
         border-style: solid;
@@ -270,7 +270,10 @@ page {
         font-weight: 500;
         width: 74rpx;
         height: 24rpx;
-        line-height: calc(24rpx - 2px);
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        // line-height: calc(24rpx + 2px);
         box-sizing: border-box;
         text-align: center;
         text-transform: capitalize;

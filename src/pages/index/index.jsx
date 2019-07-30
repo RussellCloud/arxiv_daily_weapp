@@ -313,7 +313,10 @@ export default class Index extends Component {
                       <View key={a._id} className='item'>
                         <View className='item-recommend'>
                           <Text>根据 {a.recommend_by} 推荐</Text>
-                          {this.renderTag(a.is_published, a.is_submitted)}
+                          {this.renderTag(
+                            a.is_published || true,
+                            a.is_submitted
+                          )}
                         </View>
                         <View className='item-title'>
                           <Text>{a.title}</Text>
