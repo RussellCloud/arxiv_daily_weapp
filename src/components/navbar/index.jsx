@@ -9,7 +9,9 @@ export default class Navbar extends Component {
     showBack: false,
     backLabel: '',
     transparent: false,
-    isBlack40: false
+    isBlack40: false,
+    type: 'navigateBack',
+    url: ''
   }
 
   static options = {
@@ -45,7 +47,10 @@ export default class Navbar extends Component {
           <CoverView className={`navbar-start${hasBackLabel}`}>
             {this.props.showBack ? (
               <CoverView className='back'>
-                <Navigator open-type='navigateBack'>
+                <Navigator
+                  openType={this.props.type || 'navigateBack'}
+                  url={this.props.url}
+                >
                   <CoverImage className='icon-back' src={BACK} />
                   {this.props.backLabel ? (
                     <CoverView className='label'>

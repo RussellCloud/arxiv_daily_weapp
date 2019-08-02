@@ -75,7 +75,8 @@ export default class Index extends Component {
     )
   }
 
-  collect = (item, index) => {
+  collect = (item, index, e) => {
+    e.stopPropagation()
     this.setState(({ list, collection }) => {
       collection = [...collection]
       list = [...list]
@@ -192,6 +193,8 @@ export default class Index extends Component {
         can = true
       }
 
+      // test
+      // const today = new Date('2019-08-01T16:02:00.942Z')
       const today = new Date()
       const now = formatDate(today)
       if (date && date !== now) {
@@ -263,6 +266,13 @@ export default class Index extends Component {
     }
   }
 
+  specific = a => e => {
+    e.stopPropagation()
+    Taro.navigateTo({
+      url: `/pages/specific/specific?id=${a._id}`
+    })
+  }
+
   renderTag(p, s) {
     if (p === true || s === true) {
       const t = p === true ? 'published' : 'submitted'
@@ -310,7 +320,11 @@ export default class Index extends Component {
                 >
                   <View className='list'>
                     {this.state.list.map((a, i) => (
-                      <View key={a._id} className='item'>
+                      <View
+                        key={a._id}
+                        className='item'
+                        onClick={this.specific(a)}
+                      >
                         <View className='item-recommend'>
                           <Text>根据 {a.recommend_by} 推荐</Text>
                           {this.renderTag(a.is_published, a.is_submitted)}
@@ -326,9 +340,10 @@ export default class Index extends Component {
                             <Text>{a.author}</Text>
                           </View>
                           <View
+                            stopPropagation
                             className='column right'
                             aria-role='button'
-                            onClick={() => this.collect(a, i)}
+                            onClick={this.collect.bind(this, a, i)}
                           >
                             {a.collected === true ? (
                               <Image

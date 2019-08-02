@@ -14,7 +14,8 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/settings/settings',
-      'pages/collection/collection'
+      'pages/collection/collection',
+      'pages/specific/specific'
     ],
     window: {
       backgroundTextStyle: 'light',

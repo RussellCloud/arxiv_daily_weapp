@@ -82,10 +82,14 @@ export default class Collection extends Component {
     )
   }
 
-  toggleDeleteDialog = selectedIndex =>
-    this.setState({
-      selectedIndex
-    })
+  select = selectedIndex => this.setState({ selectedIndex })
+
+  toggleDeleteDialog = (item, index, e) => {
+    e.stopPropagation()
+    if (item.collected) {
+      this.select(index)
+    }
+  }
 
   onInput = ({ detail: { value } }) => {
     const disabledSend = !value || !EMAIL_REGEX.test(value)
@@ -116,6 +120,13 @@ export default class Collection extends Component {
       }
     )
   }
+
+  // specific = a => e => {
+  //   e.stopPropagation()
+  //   Taro.navigateTo({
+  //     url: `/pages/specific/specific?id=${a._id}`
+  //   })
+  // }
 
   componentDidMount() {}
 
@@ -240,7 +251,11 @@ export default class Collection extends Component {
                   <ScrollView scrollY className='scroll-view'>
                     <View className='list'>
                       {this.state.collection.map((a, i) => (
-                        <View key={a._id} className='item'>
+                        <View
+                          key={a._id}
+                          className='item'
+                          // onClick={this.specific(a)}
+                        >
                           <View className='item-recommend'>
                             <Text>根据 {a.recommend_by} 推荐</Text>
                             {this.renderTag(a.is_published, a.is_submitted)}
@@ -258,10 +273,7 @@ export default class Collection extends Component {
                             <View
                               className='column right'
                               aria-role='button'
-                              onClick={() =>
-                                a.collected === true &&
-                                this.toggleDeleteDialog(i)
-                              }
+                              onClick={this.toggleDeleteDialog.bind(this, a, i)}
                             >
                               {a.collected === true ? (
                                 <Image
@@ -331,7 +343,7 @@ export default class Collection extends Component {
             className='icon-close'
             mode='widthFix'
             src={CLOSE}
-            onClick={() => this.toggleDeleteDialog(-1)}
+            onClick={this.select.bind(this, -1)}
           />
         </View>
       </View>

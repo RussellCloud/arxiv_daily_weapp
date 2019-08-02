@@ -1,0 +1,109 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    box-sizing: border-box;
+
+    .header,
+    .body {
+      margin: 0 30rpx;
+    }
+    .header {
+      padding-top: 32rpx - 11rpx;
+      padding-bottom: 30rpx;
+      border-bottom: 1px solid #979797;
+      box-sizing: border-box;
+      .title {
+        font-size: 34rpx;
+        line-height: 40rpx;
+        font-weight: 500;
+      }
+      .author {
+        margin-top: 20rpx;
+        font-size: 24rpx;
+        line-height: 28rpx;
+      }
+      .comment {
+        margin-top: 20rpx;
+        font-size: 24rpx;
+        line-height: 30rpx;
+        color: #929090;
+      }
+    }
+    .body {
+      padding-top: 20rpx;
+      padding-bottom: 30rpx;
+      &-header {
+        display: flex;
+        justify-content: space-between;
+        .left {
+          font-size: 36rpx;
+          font-weight: 500;
+          line-height: 50rpx;
+        }
+        .right {
+          color: #61b58f;
+          font-size: 22rpx;
+          // line-height: 30rpx;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .icon {
+            margin-right: 15rpx;
+          }
+        }
+      }
+      .content {
+        margin-top: 11rpx;
+        font-size: 24rpx;
+        line-height: 40rpx;
+        color: #434141;
+        letter-spacing: 0.46px;
+      }
+    }
+  }
+  .actions {
+    flex: none;
+    width: 100%;
+    height: 112rpx;
+    .button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      font-size: 30rpx;
+      font-weight: 400;
+      border-radius: 0;
+      border-top-color: #979797;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      line-height: calc(112rpx - 1px);
+
+      .icon {
+        margin-right: 22rpx;
+      }
+
+      &.collect {
+        color: #000;
+      }
+      &.share {
+        border-top-color: #009688;
+      }
+    }
+  }
+}
+
+.icon-doc {
+  width: 20rpx;
+}
+.icon-share {
+  width: 35rpx;
+}
+.icon-heart {
+  width: 40rpx;
+  height: auto;
+}

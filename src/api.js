@@ -1,36 +1,36 @@
-import Taro from '@tarojs/taro'
+import { getStorage, request } from '@tarojs/taro'
 
 const API_URL = 'https://arxiv.russellcloud.com/v1'
 
+const requestBuilder = opts =>
+  request(opts).then(({ statusCode, data: { code, data } }) => {
+    if (statusCode === 200 && code === 200) {
+      return data
+    }
+    const error = new Error(data)
+    error.code = code
+    throw error
+  })
+
 export default {
   getStorage: key =>
-    Taro.getStorage({ key })
+    getStorage({ key })
       .then(({ data }) => data)
       .catch(() => []),
   search: data =>
-    Taro.request({
+    requestBuilder({
       url: `${API_URL}/search`,
       method: 'POST',
       data
-    }).then(({ statusCode, data }) => {
-      if (statusCode === 200 && data.code === 200) {
-        return data.data
-      }
-      const error = new Error(data.data)
-      error.code = data.code
-      throw error
     }),
   send: data =>
-    Taro.request({
+    requestBuilder({
       url: `${API_URL}/send`,
       method: 'POST',
       data
-    }).then(({ statusCode, data }) => {
-      if (statusCode === 200 && data.code === 200) {
-        return data.data
-      }
-      const error = new Error(data.data)
-      error.code = data.code
-      throw error
+    }),
+  specific: id =>
+    requestBuilder({
+      url: `${API_URL}/detail/${id}`
     })
 }
