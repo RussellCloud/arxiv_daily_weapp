@@ -34,10 +34,11 @@ const formatData = item => {
 }
 
 export default class Specific extends Component {
+  // eslint-disable-next-line react/sort-comp
   config = {
     navigationBarTitleText: '',
-    disableScroll: true,
-    navigationStyle: 'custom'
+    navigationStyle: 'custom',
+    disableScroll: true
   }
 
   state = {
@@ -121,6 +122,7 @@ export default class Specific extends Component {
   }
 
   onMessage = e => {
+    console.log(e)
     this.setState({
       url: ''
     })

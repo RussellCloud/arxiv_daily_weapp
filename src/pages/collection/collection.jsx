@@ -21,6 +21,7 @@ import './collection.scss'
 const EMAIL_REGEX = /^[^\.\s@:](?:[^\s@:]*[^\s@:\.])?@[^\.\s@]+(?:\.[^\.\s@]+)*$/
 
 export default class Collection extends Component {
+  // eslint-disable-next-line react/sort-comp
   config = {
     navigationBarTitleText: '收藏',
     navigationStyle: 'custom'

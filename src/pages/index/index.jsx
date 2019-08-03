@@ -35,6 +35,7 @@ const formatData = item => {
 }
 
 export default class Index extends Component {
+  // eslint-disable-next-line react/sort-comp
   config = {
     navigationBarTitleText: '首页',
     navigationStyle: 'custom',
