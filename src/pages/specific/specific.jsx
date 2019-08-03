@@ -4,8 +4,8 @@ import {
   Text,
   Button,
   Image,
-  ScrollView,
-  WebView
+  ScrollView
+  // WebView
 } from '@tarojs/components'
 import Navbar from '@/components/navbar'
 import DOC from '@/asserts/doc@2x.png'
@@ -52,8 +52,7 @@ export default class Specific extends Component {
     const { id, type, url } = this.$router.params
     Promise.all([api.getStorage('collection'), api.specific(id)]).then(
       ([collection, specific]) => {
-        const index = collection.findIndex(c => c._id === specific.id)
-        specific._id = specific.id
+        const index = collection.findIndex(c => c._id === specific._id)
         specific.collected = index > -1
         this.setState({
           specific,
@@ -69,21 +68,16 @@ export default class Specific extends Component {
   collect = () => {
     this.setState(({ specific, collection, index }) => {
       specific.collected = !specific.collected
-      if (specific.collected) {
-        if (index === -1) {
-          collection.push(
-            formatData({
-              ...specific,
-              _id: specific.id
-            })
-          )
-          index = collection.length - 1
-        }
-      } else {
-        if (index !== -1) {
-          collection.splice(index, 1)
-          index = -1
-        }
+      if (specific.collected && index === -1) {
+        collection.push(
+          formatData({
+            ...specific
+          })
+        )
+        index = collection.length - 1
+      } else if (!specific.collected && index !== -1) {
+        collection.splice(index, 1)
+        index = -1
       }
       Taro.setStorageSync('collection', collection)
       return {
@@ -133,10 +127,9 @@ export default class Specific extends Component {
   }
 
   onShareAppMessage() {
-    const { specific } = this.state
-    const { id } = specific
+    const { _id } = this.state.specific
     return {
-      path: `/pages/specific/specific?id=${id}&type=redirectTo&url=/pages/index/index`
+      path: `/pages/specific/specific?id=${_id}&type=redirectTo&url=/pages/index/index`
     }
   }
 
