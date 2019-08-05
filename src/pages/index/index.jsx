@@ -97,7 +97,19 @@ export default class Index extends Component {
     })
   }
 
-  componentWillMount() {}
+  componentWillMount() {
+    this.sync().then(({ can, values }) => {
+      if (!can) {
+        Taro.navigateTo({
+          url: '/pages/settings/settings?start=1'
+        })
+        return
+      }
+
+      values.status = 1
+      this.setState(values, this.fetch)
+    })
+  }
 
   fetch = () => {
     const {
@@ -223,16 +235,16 @@ export default class Index extends Component {
   componentWillUnmount() {}
 
   componentDidShow() {
-    this.sync().then(({ can, values }) => {
-      if (!can) {
-        Taro.navigateTo({
-          url: '/pages/settings/settings?start=1'
-        })
-        return
-      }
-
-      values.status = 1
-      this.setState(values, this.fetch)
+    api.getStorage('collection').then(collection => {
+      this.setState(({ list }) => {
+        return {
+          list: list.map(item => {
+            item.collected = Boolean(collection.find(c => c._id === item._id))
+            return item
+          }),
+          collection
+        }
+      })
     })
   }
 
