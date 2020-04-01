@@ -149,27 +149,27 @@ export default class Collection extends Component {
     const { status } = this.state
     if (status === 1) {
       return (
-        <View className='card-wrap'>
-          <View className='card-header'>
+        <View className="card-wrap">
+          <View className="card-header">
             <Text>邮箱确认</Text>
           </View>
-          <View className='card-body'>
-            <View className='input-wrap'>
+          <View className="card-body">
+            <View className="input-wrap">
               <Input
                 focus
                 value={this.state.email}
-                className='input'
-                placeholder='请输入邮箱地址'
+                className="input"
+                placeholder="请输入邮箱地址"
                 onInput={this.onInput}
               />
             </View>
-            <View className='tip'>
+            <View className="tip">
               本次操作将发送当前收藏论文列表至上面的邮箱
             </View>
           </View>
-          <View className='card-footer'>
+          <View className="card-footer">
             <Button
-              className='button mid primary'
+              className="button mid primary"
               disabled={this.state.disabledSend}
               onClick={this.send}
             >
@@ -182,14 +182,14 @@ export default class Collection extends Component {
 
     if (status === 2) {
       return (
-        <View className='card-wrap'>
-          <View className='card-header'>
+        <View className="card-wrap">
+          <View className="card-header">
             <Text>提交发送中</Text>
           </View>
-          <View className='card-body'>
+          <View className="card-body">
             <Image
-              className='icon-email-sending'
-              mode='widthFix'
+              className="icon-email-sending"
+              mode="widthFix"
               src={EMAIL_SENDING}
             />
           </View>
@@ -198,14 +198,14 @@ export default class Collection extends Component {
     }
 
     return (
-      <View className='card-wrap'>
-        <View className='card-header'>
+      <View className="card-wrap">
+        <View className="card-header">
           <Text>发送{status === 3 ? '成功' : '失败'}</Text>
         </View>
-        <View className='card-body'>
+        <View className="card-body">
           <Image
-            className='icon-email-status'
-            mode='widthFix'
+            className="icon-email-status"
+            mode="widthFix"
             src={status === 3 ? EMAIL_SUCCESS : EMAIL_FAIL}
           />
         </View>
@@ -215,31 +215,43 @@ export default class Collection extends Component {
 
   render() {
     return (
-      <View className='container collection'>
-        <Navbar title='' backLabel='返回首页' transparent showBack />
-        <View className='section tags'>
-          <View className='columns section-header'>
-            <View className='column left'>
-              <Text className='title'>今日收藏</Text>
-              <Text className='subtitle is-50'>（{this.state.count}）</Text>
+      <View className="container collection">
+        <Navbar title="" backLabel="返回首页" transparent showBack />
+        <View className="section tags">
+          <View className="columns section-header">
+            <View className="column left">
+              <Text className="title">今日收藏</Text>
+              <Text className="subtitle is-50">（{this.state.count}）</Text>
             </View>
-            <View className='column right' />
+            <View className="column right">
+              <View className="tags">
+                <Navigator
+                  target="miniProgram"
+                  app-id="wx18a2ac992306a5a4"
+                  path="/pages/apps/largess/detail?id=rPBY7KSQbEqgPc1CLmE7uw%3D%3D"
+                >
+                  <Text className="btn" aria-role="button">
+                    鼓励一下
+                  </Text>
+                </Navigator>
+              </View>
+            </View>
           </View>
 
-          <View className='section-body'>
-            <View className='catalog subjects'>
-              <View className='catalog-header'>
+          <View className="section-body">
+            <View className="catalog subjects">
+              <View className="catalog-header">
                 <Text>每日结束时会清空当前收藏夹</Text>
               </View>
-              <View className='catalog-body'>
+              <View className="catalog-body">
                 {this.state.count === 0 ? (
-                  <View className='empty'>
+                  <View className="empty">
                     <Image
-                      mode='widthFix'
-                      className='icon-collection-empty'
+                      mode="widthFix"
+                      className="icon-collection-empty"
                       src={COLLECTION_EMPTY}
                     />
-                    <View className='tips'>
+                    <View className="tips">
                       <View>
                         <Text>如你所见</Text>
                       </View>
@@ -249,42 +261,42 @@ export default class Collection extends Component {
                     </View>
                   </View>
                 ) : (
-                  <ScrollView scrollY className='scroll-view'>
-                    <View className='list'>
+                  <ScrollView scrollY className="scroll-view">
+                    <View className="list">
                       {this.state.collection.map((a, i) => (
                         <View
                           key={a._id}
-                          className='item'
+                          className="item"
                           // onClick={this.specific(a)}
                         >
-                          <View className='item-recommend'>
+                          <View className="item-recommend">
                             <Text>根据 {a.recommend_by} 推荐</Text>
                             {this.renderTag(a.is_published, a.is_submitted)}
                           </View>
-                          <View className='item-title'>
+                          <View className="item-title">
                             <Text>{a.title}</Text>
                           </View>
-                          <View className='item-description'>
+                          <View className="item-description">
                             <Text>{a.info}</Text>
                           </View>
-                          <View className='columns item-author'>
-                            <View className='column left'>
+                          <View className="columns item-author">
+                            <View className="column left">
                               <Text>{a.author}</Text>
                             </View>
                             <View
-                              className='column right'
-                              aria-role='button'
+                              className="column right"
+                              aria-role="button"
                               onClick={this.toggleDeleteDialog.bind(this, a, i)}
                             >
                               {a.collected === true ? (
                                 <Image
-                                  className='column icon-heart'
+                                  className="column icon-heart"
                                   src={HEART_SOLID}
                                 />
                               ) : (
                                 <Image
-                                  aria-role='button'
-                                  className='column icon-heart'
+                                  aria-role="button"
+                                  className="column icon-heart"
                                   src={HEART}
                                 />
                               )}
@@ -299,10 +311,10 @@ export default class Collection extends Component {
             </View>
           </View>
 
-          <View className='section-footer'>
+          <View className="section-footer">
             <Button
               disabled={this.state.disabled}
-              className='button big primary'
+              className="button big primary"
               onClick={this.toggleDialog}
             >
               发送到邮箱
@@ -310,11 +322,11 @@ export default class Collection extends Component {
           </View>
         </View>
         <View className={`dialog${this.state.status > 0 ? ' open' : ''}`}>
-          <View className='card email'>{this.renderStep()}</View>
+          <View className="card email">{this.renderStep()}</View>
           <Image
-            aria-role='button'
-            className='icon-close'
-            mode='widthFix'
+            aria-role="button"
+            className="icon-close"
+            mode="widthFix"
             src={CLOSE}
             onClick={this.toggleDialog}
           />
@@ -322,27 +334,27 @@ export default class Collection extends Component {
         <View
           className={`dialog${this.state.selectedIndex > -1 ? ' open' : ''}`}
         >
-          <View className='card email'>
-            <View className='card-wrap'>
-              <View className='card-header'>
+          <View className="card email">
+            <View className="card-wrap">
+              <View className="card-header">
                 <Text>取消收藏</Text>
               </View>
-              <View className='card-body'>
-                <View className='content'>
+              <View className="card-body">
+                <View className="content">
                   取消后将从收藏列表中删除，您可以在首页重新收藏
                 </View>
               </View>
-              <View className='card-footer'>
-                <Button className='button mid primary' onClick={this.collect}>
+              <View className="card-footer">
+                <Button className="button mid primary" onClick={this.collect}>
                   删除
                 </Button>
               </View>
             </View>
           </View>
           <Image
-            aria-role='button'
-            className='icon-close'
-            mode='widthFix'
+            aria-role="button"
+            className="icon-close"
+            mode="widthFix"
             src={CLOSE}
             onClick={this.select.bind(this, -1)}
           />

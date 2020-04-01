@@ -22,7 +22,8 @@ class App extends Component {
       navigationBarBackgroundColor: '#fff',
       navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black'
-    }
+    },
+    navigateToMiniProgramAppIdList: ['wx18a2ac992306a5a4']
   }
 
   componentDidMount() {}
