@@ -11,3 +11,10 @@ See detailed introduction on [Zhihu](https://zhuanlan.zhihu.com/p/76578218).
 2. Scan the barcode in the below:
 
 ![barcode](./barcode.jpg)
+
+## Sponsorship
+
+Your sponsorship will help us provide fast, reliable service to our users by covering ourproject's server costs. By supporting our open-source software, you enable us tocontinue delivering value to the community. To sponsor us, please scan the barcode in the below. Thank you for your generous support.
+
+![barcode](./sponsor.jpg)
+
